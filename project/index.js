@@ -10,6 +10,8 @@ import GestureTest from './pages/GestureTest';
 import Homework from './pages/Homework';
 import {Scale} from './src/GestureSystem/Scale';
 import TapNavigation from './src/Navigation/TapNavigation';
+import Slide from './src/GestureSystem/slider';
+import Dragable from './src/GestureHW/Dragable';
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => TapNavigation);
+AppRegistry.registerComponent(appName, () => Dragable);
