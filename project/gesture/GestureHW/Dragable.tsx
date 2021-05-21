@@ -7,6 +7,7 @@ import {
   View,
   Text,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import {event} from 'react-native-reanimated';
@@ -19,13 +20,10 @@ const Dragable = () => {
       <View
         onStartShouldSetResponder={() => true}
         onResponderMove={event =>
-          Animated.event([
-            null,
-            {
-              dx: translation.x,
-              dy: translation.y,
-            },
-          ])
+          translation.setValue({
+            x: event.nativeEvent.locationX,
+            y: event.nativeEvent.locationY,
+          })
         }>
         <Animated.View
           style={[
@@ -43,9 +41,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   circle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     backgroundColor: 'blue',
   },
 });

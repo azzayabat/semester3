@@ -64,7 +64,7 @@ const SliderCard = ({item, index, scrollX}) => {
         justifyContent: 'center',
         alignItems: 'center',
       }}
-      blurRadius={30}
+      blurRadius={40}
       source={{uri: item.uri}}>
       <Animated.Image
         source={{uri: item.uri}}
@@ -93,7 +93,7 @@ const SliderCard = ({item, index, scrollX}) => {
   );
 };
 
-const Slide = () => {
+export const Slider = () => {
   const scrollX = useRef(new Animated.Value(0)).current;
 
   const onScrollEvent = Animated.event(
@@ -136,5 +136,3 @@ const Slide = () => {
     </SafeAreaView>
   );
 };
-
-export default Slide;

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Image,
   Text,
@@ -9,32 +9,36 @@ import {
   TouchableOpacity,
   Switch,
   TextInput,
+  Animated,
+  SafeAreaView,
+  FlatList,
 } from 'react-native';
+import {RotationGestureHandler} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const MovieDetail = props => {
-  const onPress = () => {
-    props.onClose && props.onClose();
-  };
-  return (
-    <View style={{paddingBottom: 10}}>
-      <TouchableHighlight onPress={onPress}>
-        <View>
-          <Text>Movie Detail</Text>
-          <Text>{props.name}</Text>
-        </View>
-      </TouchableHighlight>
-    </View>
-  );
-};
+const Item = ({title}) => {
+  const rotate = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(0)).current;
 
-const MovieInfo = props => {
-  const onPress = () => {
-    props.onPress && props.onPress(props.name);
-  };
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(rotate, {
+        toValue: 1,
+        duration: 1000,
+        delay: 800,
+        useNativeDriver: false,
+      }),
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 800,
+        delay: 800,
+        useNativeDriver: false,
+      }),
+    ]).start();
+  });
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity>
       <View
         style={{
           height: 140,
@@ -44,22 +48,55 @@ const MovieInfo = props => {
           borderRadius: 10,
         }}>
         <View style={{flex: 2}}>
-          <Image
-            style={{height: 140, borderRadius: 10}}
+          <Animated.Image
+            style={{
+              height: 140,
+              borderRadius: 10,
+              transform: [
+                {
+                  rotate: rotate.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '720deg'],
+                  }),
+                },
+              ],
+            }}
             source={{
-              uri: props.image,
-            }}></Image>
+              uri: title.image,
+            }}></Animated.Image>
         </View>
-        <View style={{flex: 6, flexDirection: 'column', padding: 15}}>
-          <Text style={styles.movieTitle}>{props.name} </Text>
+        <Animated.View
+          style={{
+            flex: 6,
+            flexDirection: 'column',
+            padding: 15,
+          }}>
+          <Animated.Text
+            style={[
+              styles.movieTitle,
+              {
+                transform: [{scale: scale}],
+              },
+            ]}>
+            {title.name}{' '}
+          </Animated.Text>
           <Icon
             name="thumbs-up"
             size={20}
             color="#ffffff"
             style={{alignSelf: 'flex-end'}}></Icon>
 
-          <View style={{flex: 2, flexDirection: 'row'}}>
-            <Text style={styles.ratings}>{props.ratings}</Text>
+          <Animated.View
+            style={{
+              flex: 2,
+              flexDirection: 'row',
+              transform: [
+                {
+                  scale: scale,
+                },
+              ],
+            }}>
+            <Text style={styles.ratings}>{title.ratings}</Text>
             <View
               style={{
                 flex: 6,
@@ -76,11 +113,11 @@ const MovieInfo = props => {
                 Released
               </Text>
               <Text style={{flex: 1, fontSize: 10, color: 'white'}}>
-                {props.date}
+                {title.date}
               </Text>
             </View>
-          </View>
-        </View>
+          </Animated.View>
+        </Animated.View>
       </View>
     </TouchableOpacity>
   );
@@ -88,10 +125,10 @@ const MovieInfo = props => {
 
 const MovieApp = () => {
   const [selectedMovie, setSelectedMovie] = useState();
-  const movieList = [
+  const DATA = [
     {
       image:
-        'https://m.media-amazon.com/images/M/MV5BNjNlOTNkYWYtOTdlZC00YzA4LTk2NmQtN2MxYzJhMDI5Y2EzXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg',
+        'https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_UY1200_CR89,0,630,1200_AL_.jpg',
       name: 'Waiting for the Barbarians',
       ratings: '8.2',
       date: '19 November 2019',
@@ -181,79 +218,41 @@ const MovieApp = () => {
       date: '19 November 2021 ',
     },
   ];
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-  const [text, onChangeText] = React.useState('');
-  const onPress = movieName => {
-    setSelectedMovie(movieName);
+
+  const scale = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  });
+
+  const renderItem = ({item}) => {
+    return <Item title={item} />;
   };
-  const onClose = () => {
-    setSelectedMovie();
-  };
-  if (selectedMovie)
-    return (
-      <View>
-        <MovieDetail name={selectedMovie} onClose={onClose} />
-      </View>
-    );
 
   return (
-    <View style={{backgroundColor: '#363b42', flex: 1}}>
-      <Text
-        style={{
-          fontSize: 25,
-          color: 'white',
-          fontWeight: 'bold',
-          padding: 10,
-        }}>
-        Movies
-      </Text>
-      {/* <Switch
-        onValueChange={toggleSwitch}
-        value={isEnabled}
-        trackColor={{false: 'red', true: 'green'}}
-        thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
-        ios_backgroundColor="#3e3e3e"
-      />
-
-      <TextInput
-        placeholder="put your name"
-        value={text}
-        onChangeText={onChangeText}
-        keyboardType="number-pad"
-      />
-      <TextInput
-        placeholder="put your name"
-        value={text}
-        onChangeText={onChangeText}
-        keyboardType="visible-password"
-      />
-      <TextInput
-        placeholder="put your name"
-        value={text}
-        onChangeText={onChangeText}
-        keyboardType="numbers-and-punctuation"
-      />
-      <TextInput
-        placeholder="put your name"
-        value={text}
-        onChangeText={onChangeText}
-        keyboardType="email-address"
-        style={{borderRadius: 30, borderWidth: 1}}
-      /> */}
-      <ScrollView>
-        {movieList.map((movie, index) => (
-          <MovieInfo
-            key={index}
-            image={movie.image}
-            date={movie.date}
-            name={movie.name}
-            ratings={movie.ratings}
-            onPress={onPress}
-          />
-        ))}
-      </ScrollView>
-    </View>
+    <SafeAreaView
+      style={{
+        backgroundColor: '#363b42',
+        flex: 1,
+      }}>
+      <Animated.View style={{transform: [{scale: scale}]}}>
+        <Text
+          style={{
+            fontSize: 25,
+            color: 'white',
+            fontWeight: 'bold',
+            padding: 10,
+          }}>
+          Movies
+        </Text>
+        <FlatList data={DATA} renderItem={renderItem} />
+      </Animated.View>
+    </SafeAreaView>
   );
 };
 
@@ -264,11 +263,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     width: 170,
-    lineHeight: 24,
+    lineHeight: 22,
   },
   ratings: {
-    flex: 1,
-    // alignContent: 'space-around',
     alignContent: 'flex-end',
     color: '#f584a0',
     fontSize: 25,

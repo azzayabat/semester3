@@ -13,7 +13,7 @@ import {
   State,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import {color} from 'react-native-reanimated';
+
 const doubleTap = React.createRef();
 
 export const Tap = () => {
