@@ -22,4 +22,4 @@ import Swipeable from './gesture/GestureHW/Swipeable';
 import Swipe from './gesture/GestureHW/Swipe';
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => Swipeable);
+AppRegistry.registerComponent(appName, () => Slider);

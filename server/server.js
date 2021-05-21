@@ -6,7 +6,7 @@ admin.initializeApp({
 });
 
 const message = {
-  notification: { title: "Notification", body: "Testing" },
+  notification: { title: "Notification", body: "testing" },
   topic: "dailyNews",
 };
 

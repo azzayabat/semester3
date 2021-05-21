@@ -10,7 +10,6 @@ import {
 import {RotationGestureHandler} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {process} from 'babel-jest';
 
 const Item = ({title}) => {
   const rotate = useRef(new Animated.Value(0)).current;
